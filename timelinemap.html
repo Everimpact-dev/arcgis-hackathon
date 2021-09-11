@@ -1,0 +1,50 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>Barnsley CO₂ concentration - Everimpact°</title>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.20/esri/themes/dark/main.css" />
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/map.css">
+
+    <script src="https://js.arcgis.com/4.20/"></script>
+    <script defer type="application/javascript" src="js/appTimeline.js"></script>
+</head>
+
+<body>
+<div>
+    <ul>
+        <li><a href="https://www.everimpact.com/" target="_blank">Everimpact°</a></li>
+        <li><a class="active" href="timelinemap.html">Timeline</a></li>
+        <li><a href="concentrationmap.html">Concentration</a></li>
+        <li><a href="https://arcg.is/Hm84S0" target="_blank">StoryMap</a></li>
+    </ul>
+</div>
+<div id="applicationDiv">
+    <div id="viewDiv">
+        <div id="titleDiv" class="esri-widget">Barnsley CO₂ concentration</div>
+    </div>
+    <div id="sliderContainer" class="esri-widget">
+        <div id="sliderValue">
+            <span id="sliderMonth"></span>
+            <span id="sliderYear"></span>
+        </div>
+        <div id="sliderInnerContainer">
+            <div id="slider"></div>
+        </div>
+
+        <div id="playButton" class="esri-widget esri-widget--button toggle-button">
+            <div>
+                <span class="toggle-button-icon esri-icon-play" aria-label="play icon"></span>
+                Play
+            </div>
+            <div>
+                <span class="toggle-button-icon esri-icon-pause" aria-label="pause icon"></span>
+                Pause
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
