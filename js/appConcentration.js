@@ -22,7 +22,7 @@ require([
 //     })
 
     const layer = new FeatureLayer({
-        url: "https://services3.arcgis.com/ng8DEz82TbsYgB9h/arcgis/rest/services/CO2_levels_between_2015_to_2021_corrected_with_Barnesley/FeatureServer/0"
+        url: "https://services3.arcgis.com/ng8DEz82TbsYgB9h/arcgis/rest/services/Carbon_Dioxide_in_Barnsley/FeatureServer/0"
     });
 
     const map = new Map({
