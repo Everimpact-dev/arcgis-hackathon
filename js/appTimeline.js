@@ -1,4 +1,6 @@
-
+const load = function () {
+    return new Promise()
+}
 require([
     "esri/Map",
     "esri/layers/FeatureLayer",
@@ -358,7 +360,7 @@ require([
 
             setTimeout(function () {
                 requestAnimationFrame(frame);
-            }, 200 );
+            }, 500 );
         };
 
         frame();
