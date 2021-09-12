@@ -1,6 +1,3 @@
-const load = function () {
-    return new Promise()
-}
 require([
     "esri/Map",
     "esri/layers/FeatureLayer",
@@ -24,7 +21,7 @@ require([
 //     })
 
     const layer = new FeatureLayer({
-        url: "https://services3.arcgis.com/ng8DEz82TbsYgB9h/arcgis/rest/services/CO2_levels_between_2015_to_2021_corrected_with_Barnesley/FeatureServer/0"
+        url: "https://services3.arcgis.com/ng8DEz82TbsYgB9h/arcgis/rest/services/Carbon_Dioxide_in_Barnsley/FeatureServer/0"
     });
 
     const map = new Map({
@@ -86,15 +83,25 @@ require([
         setField(Math.round(event.value))
     });
 
+
     // Toggle animation on/off when user
     // clicks on the play button
-    playButton.addEventListener("click", function() {
+    function toPlay() {
         if (playButton.classList.contains("toggled")) {
             stopAnimation();
         } else {
             startAnimation();
         }
-    });
+    }
+
+    document.body.addEventListener('keyup', event => {
+        if (event.code === 'Space') {
+            toPlay();
+        }
+    })
+
+    playButton.addEventListener("click", toPlay);
+
 
     view.ui.empty("top-left");
     view.ui.add(titleDiv, "top-left");
