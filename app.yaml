@@ -1,0 +1,17 @@
+runtime: python27
+api_version: 1
+threadsafe: true
+
+skip_files:
+  - ^data/*.*
+
+handlers:
+  - url: /
+    static_files: timelinemap.html
+    upload: timelinemap.html
+
+  - url: /(.*)
+    static_files: \1
+    upload: (.*)
+
+
