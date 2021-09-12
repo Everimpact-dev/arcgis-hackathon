@@ -1,6 +1,7 @@
 
 require([
     "esri/Map",
+    "esri/layers/FeatureLayer",
     "esri/views/MapView",
     "esri/core/promiseUtils",
     "esri/widgets/Legend",
@@ -8,35 +9,40 @@ require([
     "esri/widgets/Slider",
     "esri/widgets/Fullscreen",
     "esri/layers/GeoJSONLayer"
-], function(Map, MapView, promiseUtils, Legend, Home, Slider, Fullscreen, GeoJSONLayer) {
+], function(Map, FeatureLayer, MapView, promiseUtils, Legend, Home, Slider, Fullscreen, GeoJSONLayer) {
 //--------------------------------------------------------------------------
 //
 //  Setup Map and View
 //
 //--------------------------------------------------------------------------
-    const geoJSONLayer = new GeoJSONLayer({
-        url: "data/Barnesley_LCLU_CO2_details.geojson"
-    })
 
-    var map = new Map({
+//  For use data locally
+//     const layer = new GeoJSONLayer({
+//         url: "data/Barnesley_LCLU_CO2_details.geojson"
+//     })
+
+    const layer = new FeatureLayer({
+        url: "https://services3.arcgis.com/ng8DEz82TbsYgB9h/arcgis/rest/services/CO2_levels_between_2015_to_2021_corrected_with_Barnesley/FeatureServer/0"
+    });
+
+    const map = new Map({
         basemap: {
             portalItem: {
                 id: "4f2e99ba65e34bb8af49733d9778fb8e"
             }
         },
-        layers: [geoJSONLayer]
+        layers: [layer]
     });
 
-    var view = new MapView({
+    const view = new MapView({
         map: map,
         container: "viewDiv",
         center: [-1.531900,53.563267],
         zoom: 5,
         constraints: {
             snapToZoom: false,
-            //minScale: 72223.819286,
             minScale: 200000,
-            // maxScale: 4500
+            maxScale: 4500
         },
         // This ensures that when going fullscreen
         // The top left corner of the view extent
@@ -51,16 +57,15 @@ require([
 //
 //--------------------------------------------------------------------------
 
-    var applicationDiv = document.getElementById("applicationDiv");
-    var sliderValue = document.getElementById("sliderValue");
-    var playButton = document.getElementById("playButton");
-    var titleDiv = document.getElementById("titleDiv");
-    var animation = null;
+    const applicationDiv = document.getElementById("applicationDiv");
+    const playButton = document.getElementById("playButton");
+    const titleDiv = document.getElementById("titleDiv");
+    let animation = null;
 
     const sliderMouth = document.getElementById('sliderMonth');
     const sliderYear = document.getElementById('sliderYear');
 
-    var slider = new Slider({
+    const slider = new Slider({
         container: "slider",
         min: 0,
         max: 72,
@@ -74,11 +79,10 @@ require([
     // When user drags the slider:
     //  - stops the animation
     //  - set the visualized year to the slider one.
-    function inputHandler(event) {
+    slider.on("thumb-drag", function (event) {
         stopAnimation();
         setField(Math.round(event.value))
-    }
-    slider.on("thumb-drag", inputHandler);
+    });
 
     // Toggle animation on/off when user
     // clicks on the play button
@@ -222,9 +226,6 @@ require([
         }
 
         const field = monthsField[value].split('-')
-        if (months[parseInt(field[1]) - 1] === undefined) {
-            console.log(field)
-        }
         const month = months[parseInt(field[1]) - 1];
         const year = field[0];
 
@@ -232,20 +233,16 @@ require([
         sliderYear.innerText = year;
 
         slider.viewModel.setValue(0, value);
-        geoJSONLayer.renderer = createRenderer(concentrationField);
+        layer.renderer = createRenderer(concentrationField);
     }
 
     setField(0);
 
     /**
      * Returns a renderer with a color visual variable driven by the input
-     * year. The selected year will always render buildings built in that year
-     * with a light blue color. Buildings built 20+ years before the indicated
-     * year are visualized with a pink color. Buildings built within that
-     * 20-year time frame are assigned a color interpolated between blue and pink.
      */
     function createRenderer(field, year = 1984) {
-        var opacityStops = [
+        const opacityStops = [
             {
                 opacity: 1,
                 value: year
@@ -347,9 +344,9 @@ require([
      * Animates the color visual variable continously
      */
     function animate(startValue) {
-        var animating = true;
-        var value = startValue;
-        var frame = function() {
+        let animating = true;
+        let value = startValue;
+        const frame = function() {
             if (!animating) {
                 return;
             }
@@ -357,10 +354,7 @@ require([
             if (value > 72) {
                 value = 0;
             }
-            //setYear(value);
             setField(value)
-
-            // Update at 30fps
 
             setTimeout(function () {
                 requestAnimationFrame(frame);

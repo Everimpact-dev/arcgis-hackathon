@@ -1,6 +1,7 @@
 
 require([
     "esri/Map",
+    "esri/layers/FeatureLayer",
     "esri/views/MapView",
     "esri/core/promiseUtils",
     "esri/widgets/Legend",
@@ -8,35 +9,40 @@ require([
     "esri/widgets/Slider",
     "esri/widgets/Fullscreen",
     "esri/layers/GeoJSONLayer"
-], function(Map, MapView, promiseUtils, Legend, Home, Slider, Fullscreen, GeoJSONLayer) {
+], function(Map, FeatureLayer, MapView, promiseUtils, Legend, Home, Slider, Fullscreen, GeoJSONLayer) {
 //--------------------------------------------------------------------------
 //
 //  Setup Map and View
 //
 //--------------------------------------------------------------------------
-    const geoJSONLayer = new GeoJSONLayer({
-        url: "data/Barnesley_LCLU_CO2_details.geojson"
-    })
 
-    var map = new Map({
+//  For use data locally
+//     const layer = new GeoJSONLayer({
+//         url: "data/Barnesley_LCLU_CO2_details.geojson"
+//     })
+
+    const layer = new FeatureLayer({
+        url: "https://services3.arcgis.com/ng8DEz82TbsYgB9h/arcgis/rest/services/CO2_levels_between_2015_to_2021_corrected_with_Barnesley/FeatureServer/0"
+    });
+
+    const map = new Map({
         basemap: {
             portalItem: {
                 id: "4f2e99ba65e34bb8af49733d9778fb8e"
             }
         },
-        layers: [geoJSONLayer]
+        layers: [layer]
     });
 
-    var view = new MapView({
+    const view = new MapView({
         map: map,
         container: "viewDiv",
         center: [-1.531900,53.563267],
         zoom: 5,
         constraints: {
             snapToZoom: false,
-            //minScale: 72223.819286,
             minScale: 200000,
-            // maxScale: 4500
+            maxScale: 4500
         },
         resizeAlign: "top-left"
     });
@@ -47,8 +53,8 @@ require([
 //
 //--------------------------------------------------------------------------
 
-    var applicationDiv = document.getElementById("applicationDiv");
-    var titleDiv = document.getElementById("titleDiv");
+    const applicationDiv = document.getElementById("applicationDiv");
+    const titleDiv = document.getElementById("titleDiv");
 
     view.ui.empty("top-left");
     view.ui.add(titleDiv, "top-left");
@@ -73,7 +79,7 @@ require([
     );
 
 // When the layerview is available, setup hovering interactivity
-view.whenLayerView(geoJSONLayer).then(setupHoverTooltip);
+view.whenLayerView(layer).then(setupHoverTooltip);
 
 
 //--------------------------------------------------------------------------
@@ -89,20 +95,16 @@ view.whenLayerView(geoJSONLayer).then(setupHoverTooltip);
         } else {
             concentrationField = 'Barnsley' + value;
         }
-        geoJSONLayer.renderer = createRenderer(concentrationField);
+        layer.renderer = createRenderer(concentrationField);
     }
 
     setField(72);
 
     /**
      * Returns a renderer with a color visual variable driven by the input
-     * year. The selected year will always render buildings built in that year
-     * with a light blue color. Buildings built 20+ years before the indicated
-     * year are visualized with a pink color. Buildings built within that
-     * 20-year time frame are assigned a color interpolated between blue and pink.
      */
     function createRenderer(field, year = 1984) {
-        var opacityStops = [
+        const opacityStops = [
             {
                 opacity: 1,
                 value: year
@@ -181,16 +183,16 @@ view.whenLayerView(geoJSONLayer).then(setupHoverTooltip);
      * the construction year of the hovered building.
      */
     function setupHoverTooltip(layerview) {
-        var highlight;
+        let highlight;
 
-        var tooltip = createTooltip();
+        const tooltip = createTooltip();
 
-        var hitTest = promiseUtils.debounce(function (event) {
+        const hitTest = promiseUtils.debounce(function (event) {
 
             return view.hitTest(event)
                 .then(function (hit) {
-                    var results = hit.results.filter(function (result) {
-                        return result.graphic.layer === geoJSONLayer;
+                    const results = hit.results.filter(function (result) {
+                        return result.graphic.layer === layer;
                     });
 
                     if (!results.length) {
@@ -232,23 +234,23 @@ view.whenLayerView(geoJSONLayer).then(setupHoverTooltip);
      * Creates a tooltip to display a the construction year of a building.
      */
     function createTooltip() {
-        var tooltip = document.createElement("div");
-        var style = tooltip.style;
+        const tooltip = document.createElement("div");
+        let style = tooltip.style;
 
         tooltip.setAttribute("role", "tooltip");
         tooltip.classList.add("tooltip");
 
-        var textElement = document.createElement("div");
+        const textElement = document.createElement("div");
         textElement.classList.add("esri-widget");
         tooltip.appendChild(textElement);
 
         view.container.appendChild(tooltip);
 
-        var x = 0;
-        var y = 0;
-        var targetX = 0;
-        var targetY = 0;
-        var visible = false;
+        let x = 0;
+        let y = 0;
+        let targetX = 0;
+        let targetY = 0;
+        let visible = false;
 
         // move the tooltip progressively
         function move() {
