@@ -4,6 +4,7 @@ threadsafe: true
 
 skip_files:
   - ^data/*.*
+  - ^pyNotebook/*.*
 
 handlers:
   - url: /
