@@ -21,3 +21,13 @@ The map data is loaded from a DataLayer on ArcgisPlatform but you can load the f
 1. [Create a google cloud project ](https://cloud.google.com/resource-manager/docs/creating-managing-projects)
 2. `gcloud app deploy --project=[PROJECT_ID]`
 
+
+
+## Data Preprocessing
+
+
+![Alt text](image/Hackathon_Images1.jpg?raw=true "Title")
+
+## Interpolation
+
+![Alt text](image/Hackathon_Images2.jpg?raw=true "Title")
